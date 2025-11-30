@@ -6,9 +6,7 @@ import {
   doc,
   getDocs,
   query,
-  where,
   orderBy,
-  Timestamp,
 } from "firebase/firestore";
 import { firestore } from "./firebase";
 import { Transaction, BudgetLimit } from "@/types/models";
@@ -45,13 +43,9 @@ export const deleteTransaction = async (id: string) => {
   await deleteDoc(transactionRef);
 };
 
-export const getTransactions = async (userId: string): Promise<Transaction[]> => {
+export const getTransactions = async (): Promise<Transaction[]> => {
   const transactionsRef = collection(firestore, "transactions");
-  const q = query(
-    transactionsRef,
-    where("userId", "==", userId),
-    orderBy("date", "desc")
-  );
+  const q = query(transactionsRef, orderBy("date", "desc"));
 
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => ({
@@ -92,11 +86,9 @@ export const deleteBudgetLimit = async (id: string) => {
   await deleteDoc(budgetLimitRef);
 };
 
-export const getBudgetLimits = async (userId: string): Promise<BudgetLimit[]> => {
+export const getBudgetLimits = async (): Promise<BudgetLimit[]> => {
   const budgetLimitsRef = collection(firestore, "budgetLimits");
-  const q = query(budgetLimitsRef, where("userId", "==", userId));
-
-  const snapshot = await getDocs(q);
+  const snapshot = await getDocs(budgetLimitsRef);
   return snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),

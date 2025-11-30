@@ -15,8 +15,8 @@ export default async function OverviewPage() {
     redirect("/login");
   }
 
-  const transactions = await getTransactions(session.user.id);
-  const budgetLimits = await getBudgetLimits(session.user.id);
+  const transactions = await getTransactions();
+  const budgetLimits = await getBudgetLimits();
 
   return (
     <div>

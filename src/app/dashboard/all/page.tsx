@@ -12,7 +12,7 @@ export default async function AllTransactionsPage() {
     redirect("/login");
   }
 
-  const transactions = await getTransactions(session.user.id);
+  const transactions = await getTransactions();
 
   return (
     <div>
@@ -23,7 +23,7 @@ export default async function AllTransactionsPage() {
             Complete history of all expenses and income
           </p>
         </div>
-        <AddTransactionDialog userId={session.user.id} />
+        <AddTransactionDialog />
       </div>
       <TransactionsTable transactions={transactions} />
     </div>

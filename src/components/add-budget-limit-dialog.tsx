@@ -41,7 +41,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export function AddBudgetLimitDialog({ userId }: { userId: string }) {
+export function AddBudgetLimitDialog() {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -64,10 +64,7 @@ export function AddBudgetLimitDialog({ userId }: { userId: string }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...values,
-          userId,
-        }),
+        body: JSON.stringify(values),
       });
 
       if (!response.ok) {

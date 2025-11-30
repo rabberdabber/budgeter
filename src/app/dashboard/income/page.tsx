@@ -12,7 +12,7 @@ export default async function IncomePage() {
     redirect("/login");
   }
 
-  const allTransactions = await getTransactions(session.user.id);
+  const allTransactions = await getTransactions();
   const income = allTransactions.filter((t) => t.type === "income");
 
   const totalIncome = income.reduce((sum, t) => sum + t.amount, 0);
@@ -26,7 +26,7 @@ export default async function IncomePage() {
             Total: ₩{totalIncome.toLocaleString("ko-KR")}
           </p>
         </div>
-        <AddTransactionDialog userId={session.user.id} />
+        <AddTransactionDialog />
       </div>
       <TransactionsTable transactions={income} />
     </div>

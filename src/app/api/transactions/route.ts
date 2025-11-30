@@ -16,11 +16,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { description, amount, category, date, type, comments, userId } = body;
-
-    if (userId !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const { description, amount, category, date, type, comments } = body;
 
     const id = await addTransaction({
       description,
@@ -29,7 +25,6 @@ export async function POST(request: Request) {
       date,
       type,
       comments,
-      userId,
     });
 
     return NextResponse.json({ id }, { status: 201 });

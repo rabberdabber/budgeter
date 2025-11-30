@@ -14,8 +14,8 @@ export default async function DashboardPage() {
   }
 
   // Fetch data
-  const transactions = await getTransactions(session.user.id);
-  const budgetLimits = await getBudgetLimits(session.user.id);
+  const transactions = await getTransactions();
+  const budgetLimits = await getBudgetLimits();
 
   // Filter for current month
   const now = new Date();
@@ -37,8 +37,8 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <AddBudgetLimitDialog userId={session.user.id} />
-          <AddTransactionDialog userId={session.user.id} />
+          <AddBudgetLimitDialog />
+          <AddTransactionDialog />
         </div>
       </div>
       <BudgetTrackerView

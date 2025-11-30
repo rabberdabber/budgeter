@@ -16,17 +16,12 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { category, limit, comments, userId } = body;
-
-    if (userId !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const { category, limit, comments } = body;
 
     const id = await addBudgetLimit({
       category,
       limit,
       comments,
-      userId,
     });
 
     return NextResponse.json({ id }, { status: 201 });

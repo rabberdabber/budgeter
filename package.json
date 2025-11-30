@@ -10,7 +10,8 @@
     "emulator": "firebase emulators:start --import=./emulator-data --export-on-exit",
     "emulator:clear": "rm -rf ./emulator-data && firebase emulators:start",
     "seed": "npx dotenv -e .env.local -- ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/seed.ts",
-    "seed:clear": "npx dotenv -e .env.local -- ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/seed.ts --clear"
+    "seed:clear": "npx dotenv -e .env.local -- ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/seed.ts --clear",
+    "migrate:user": "npx dotenv -e .env.local -- ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/migrate-user.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

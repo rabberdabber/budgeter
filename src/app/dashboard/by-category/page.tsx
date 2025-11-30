@@ -12,7 +12,7 @@ export default async function ByCategoryPage() {
     redirect("/login");
   }
 
-  const transactions = await getTransactions(session.user.id);
+  const transactions = await getTransactions();
 
   return (
     <div>
@@ -23,7 +23,7 @@ export default async function ByCategoryPage() {
             Kanban board view of your transactions
           </p>
         </div>
-        <AddTransactionDialog userId={session.user.id} />
+        <AddTransactionDialog />
       </div>
       <KanbanView transactions={transactions} />
     </div>

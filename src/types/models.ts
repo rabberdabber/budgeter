@@ -37,7 +37,6 @@ export interface Transaction {
   date: string; // ISO date string
   type: TransactionType;
   comments?: string;
-  userId: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -46,7 +45,6 @@ export interface BudgetLimit {
   id?: string;
   category: Category;
   limit: number;
-  userId: string;
   comments?: string;
   createdAt?: string;
   updatedAt?: string;

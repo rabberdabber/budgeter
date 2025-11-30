@@ -2,10 +2,9 @@ import { db } from "./firebase-admin";
 import { Transaction, BudgetLimit } from "@/types/models";
 
 // Transactions
-export const getTransactions = async (userId: string): Promise<Transaction[]> => {
+export const getTransactions = async (): Promise<Transaction[]> => {
   const snapshot = await db
     .collection("transactions")
-    .where("userId", "==", userId)
     .orderBy("date", "desc")
     .get();
 
@@ -46,10 +45,9 @@ export const deleteTransaction = async (id: string) => {
 };
 
 // Budget Limits
-export const getBudgetLimits = async (userId: string): Promise<BudgetLimit[]> => {
+export const getBudgetLimits = async (): Promise<BudgetLimit[]> => {
   const snapshot = await db
     .collection("budgetLimits")
-    .where("userId", "==", userId)
     .get();
 
   return snapshot.docs.map((doc) => ({
