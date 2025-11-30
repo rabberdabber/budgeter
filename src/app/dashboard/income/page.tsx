@@ -1,0 +1,33 @@
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { getTransactions } from "@/lib/firestore-server";
+import { TransactionsTable } from "@/components/transactions-table";
+import { AddTransactionDialog } from "@/components/add-transaction-dialog";
+
+export default async function IncomePage() {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  const allTransactions = await getTransactions(session.user.id);
+  const income = allTransactions.filter((t) => t.type === "income");
+
+  const totalIncome = income.reduce((sum, t) => sum + t.amount, 0);
+
+  return (
+    <div>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Income</h1>
+          <p className="text-muted-foreground">
+            Total: ₩{totalIncome.toLocaleString("ko-KR")}
+          </p>
+        </div>
+        <AddTransactionDialog userId={session.user.id} />
+      </div>
+      <TransactionsTable transactions={income} />
+    </div>
+  );
+}
