@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { z } from "zod";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,24 +31,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES, Category, TransactionType } from "@/types/models";
+import { CATEGORIES } from "@/types/models";
 
 const formSchema = z.object({
   description: z.string().min(1, "Description is required"),
-  amount: z.coerce.number().positive("Amount must be positive"),
+  amount: z.number().positive("Amount must be positive"),
   category: z.string().min(1, "Category is required"),
   date: z.string().min(1, "Date is required"),
   type: z.enum(["expense", "income"] as const),
   comments: z.string().optional(),
 });
 
+type FormData = z.infer<typeof formSchema>;
+
 export function AddTransactionDialog({ userId }: { userId: string }) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       description: "",
       amount: 0,
@@ -59,7 +61,7 @@ export function AddTransactionDialog({ userId }: { userId: string }) {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormData) {
     setIsLoading(true);
 
     try {
@@ -154,6 +156,7 @@ export function AddTransactionDialog({ userId }: { userId: string }) {
                       type="number"
                       placeholder="10000"
                       {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

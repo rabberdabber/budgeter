@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { z } from "zod";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,21 +31,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES, Category } from "@/types/models";
+import { CATEGORIES } from "@/types/models";
 
 const formSchema = z.object({
   category: z.string().min(1, "Category is required"),
-  limit: z.coerce.number().positive("Limit must be positive"),
+  limit: z.number().positive("Limit must be positive"),
   comments: z.string().optional(),
 });
+
+type FormData = z.infer<typeof formSchema>;
 
 export function AddBudgetLimitDialog({ userId }: { userId: string }) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       category: "",
       limit: 0,
@@ -53,7 +55,7 @@ export function AddBudgetLimitDialog({ userId }: { userId: string }) {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormData) {
     setIsLoading(true);
 
     try {
@@ -138,6 +140,7 @@ export function AddBudgetLimitDialog({ userId }: { userId: string }) {
                       type="number"
                       placeholder="100000"
                       {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
