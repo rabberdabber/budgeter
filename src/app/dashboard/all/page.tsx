@@ -1,11 +1,12 @@
-import { auth } from "@/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
 import { getTransactions } from "@/lib/firestore-server";
 import { TransactionsTable } from "@/components/transactions-table";
 import { AddTransactionDialog } from "@/components/add-transaction-dialog";
 
 export default async function AllTransactionsPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     redirect("/login");

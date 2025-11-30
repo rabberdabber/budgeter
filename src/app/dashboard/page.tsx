@@ -1,4 +1,5 @@
-import { auth } from "@/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
 import { getTransactions, getBudgetLimits } from "@/lib/firestore-server";
 import { BudgetTrackerView } from "@/components/budget-tracker-view";
@@ -6,7 +7,7 @@ import { AddTransactionDialog } from "@/components/add-transaction-dialog";
 import { AddBudgetLimitDialog } from "@/components/add-budget-limit-dialog";
 
 export default async function DashboardPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     redirect("/login");

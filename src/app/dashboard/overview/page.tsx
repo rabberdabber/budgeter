@@ -1,4 +1,5 @@
-import { auth } from "@/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
 import { getTransactions, getBudgetLimits } from "@/lib/firestore-server";
 import { SpendingOverviewChart } from "@/components/charts/spending-overview-chart";
@@ -8,7 +9,7 @@ import { BudgetVsActualChart } from "@/components/charts/budget-vs-actual-chart"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function OverviewPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     redirect("/login");

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { auth, signOut } from "@/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,7 +8,6 @@ import {
   DollarSign,
   LayoutDashboard,
   List,
-  PieChart,
   TrendingDown,
   TrendingUp,
   Wallet,
@@ -58,7 +58,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     redirect("/login");
@@ -69,7 +69,10 @@ export default async function DashboardLayout({
       {/* Sidebar */}
       <aside className="hidden w-64 flex-col border-r bg-muted/40 md:flex">
         <div className="flex h-16 items-center border-b px-6">
-          <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 font-semibold"
+          >
             <DollarSign className="h-6 w-6" />
             <span>Budget Tracker</span>
           </Link>
@@ -89,24 +92,16 @@ export default async function DashboardLayout({
         <div className="border-t p-4">
           <div className="mb-3 space-y-0.5 px-3">
             <p className="text-sm font-medium">{session.user.name}</p>
-            <p className="text-xs text-muted-foreground">{session.user.email}</p>
+            <p className="text-xs text-muted-foreground">
+              {session.user.email}
+            </p>
           </div>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/login" });
-            }}
-          >
-            <Button
-              type="submit"
-              variant="ghost"
-              className="w-full justify-start"
-              size="sm"
-            >
+          <Link href="/api/auth/signout">
+            <Button variant="ghost" className="w-full justify-start" size="sm">
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
-          </form>
+          </Link>
         </div>
       </aside>
 
