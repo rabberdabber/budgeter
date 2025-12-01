@@ -8,12 +8,14 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { useIsMobile } from "@/hooks/useMediaQuery";
 
 interface SpendingOverviewChartProps {
   transactions: Transaction[];
 }
 
 export function SpendingOverviewChart({ transactions }: SpendingOverviewChartProps) {
+  const isMobile = useIsMobile();
   const expenses = transactions.filter((t) => t.type === "expense");
 
   const data = CATEGORIES.map((category) => {
@@ -22,6 +24,7 @@ export function SpendingOverviewChart({ transactions }: SpendingOverviewChartPro
 
     return {
       category,
+      shortCategory: category.length > 8 ? category.slice(0, 6) + "..." : category,
       total,
     };
   }).filter((d) => d.total > 0);
@@ -41,22 +44,31 @@ export function SpendingOverviewChart({ transactions }: SpendingOverviewChartPro
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="flex h-[250px] md:h-[300px] items-center justify-center text-muted-foreground">
             No expense data available
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[400px] w-full">
-            <BarChart data={data}>
+          <ChartContainer config={chartConfig} className="h-[300px] md:h-[400px] w-full">
+            <BarChart data={data} margin={{ bottom: isMobile ? 60 : 80 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
-                dataKey="category"
+                dataKey={isMobile ? "shortCategory" : "category"}
                 angle={-45}
                 textAnchor="end"
-                height={100}
-                fontSize={12}
+                height={isMobile ? 80 : 100}
+                fontSize={isMobile ? 10 : 12}
+                interval={0}
               />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <YAxis fontSize={isMobile ? 10 : 12} width={isMobile ? 50 : 60} />
+              <ChartTooltip
+                content={<ChartTooltipContent />}
+                labelFormatter={(label, payload) => {
+                  if (payload && payload[0]) {
+                    return payload[0].payload.category;
+                  }
+                  return label;
+                }}
+              />
               <Bar
                 dataKey="total"
                 fill="var(--color-total)"

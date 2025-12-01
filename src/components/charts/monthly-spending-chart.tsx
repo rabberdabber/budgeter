@@ -8,12 +8,14 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { useIsMobile } from "@/hooks/useMediaQuery";
 
 interface MonthlySpendingChartProps {
   transactions: Transaction[];
 }
 
 export function MonthlySpendingChart({ transactions }: MonthlySpendingChartProps) {
+  const isMobile = useIsMobile();
   const expenses = transactions.filter((t) => t.type === "expense");
 
   // Group by month
@@ -54,28 +56,30 @@ export function MonthlySpendingChart({ transactions }: MonthlySpendingChartProps
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="flex h-[250px] md:h-[300px] items-center justify-center text-muted-foreground">
             No expense data available
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[400px] w-full">
-            <LineChart data={data}>
+          <ChartContainer config={chartConfig} className="h-[300px] md:h-[400px] w-full">
+            <LineChart data={data} margin={{ left: isMobile ? -10 : 0, right: isMobile ? 10 : 20 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="month"
                 tickFormatter={(value) => {
                   const [year, month] = value.split("-");
-                  return `${month}/${year.slice(2)}`;
+                  return isMobile ? `${month}` : `${month}/${year.slice(2)}`;
                 }}
+                fontSize={isMobile ? 10 : 12}
+                interval={isMobile ? 1 : 0}
               />
-              <YAxis />
+              <YAxis fontSize={isMobile ? 10 : 12} width={isMobile ? 50 : 60} />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Line
                 type="monotone"
                 dataKey="total"
                 stroke="var(--color-total)"
                 strokeWidth={2}
-                dot={{ r: 4 }}
+                dot={{ r: isMobile ? 3 : 4 }}
               />
             </LineChart>
           </ChartContainer>

@@ -7,7 +7,11 @@ export function cn(...inputs: ClassValue[]) {
 
 // Currency formatter for Korean Won
 export function formatCurrency(amount: number): string {
-  return `₩${amount.toLocaleString("ko-KR")}`;
+  return new Intl.NumberFormat("ko-KR", {
+    style: "currency",
+    currency: "KRW",
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
 // Date formatter

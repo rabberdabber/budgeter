@@ -2,8 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
 import { getTransactions } from "@/lib/firestore-server";
-import { KanbanView } from "@/components/kanban-view";
-import { AddTransactionDialog } from "@/components/add-transaction-dialog";
+import { FilteredKanbanView } from "@/components/filtered-kanban-view";
 
 export default async function ByCategoryPage() {
   const session = await getServerSession(authOptions);
@@ -14,18 +13,5 @@ export default async function ByCategoryPage() {
 
   const transactions = await getTransactions();
 
-  return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">By Category</h1>
-          <p className="text-muted-foreground">
-            Kanban board view of your transactions
-          </p>
-        </div>
-        <AddTransactionDialog />
-      </div>
-      <KanbanView transactions={transactions} />
-    </div>
-  );
+  return <FilteredKanbanView transactions={transactions} />;
 }

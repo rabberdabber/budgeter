@@ -5,12 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMobile } from "@/hooks/useMediaQuery";
 
 interface KanbanViewProps {
   transactions: Transaction[];
 }
 
 export function KanbanView({ transactions }: KanbanViewProps) {
+  const isMobile = useIsMobile();
+
   const categoriesWithTransactions = CATEGORIES.map((category) => {
     const categoryTransactions = transactions.filter(
       (t) => t.category === category
@@ -43,31 +46,31 @@ export function KanbanView({ transactions }: KanbanViewProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {categoriesWithTransactions.map(({ category, transactions, total }) => (
         <Card key={category} className="flex flex-col">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">{category}</CardTitle>
+            <CardTitle className="text-base sm:text-lg">{category}</CardTitle>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {transactions.length} transaction{transactions.length !== 1 ? "s" : ""}
               </span>
-              <span className={`text-sm font-semibold ${total < 0 ? "text-destructive" : "text-green-600"}`}>
+              <span className={`text-xs sm:text-sm font-semibold ${total < 0 ? "text-destructive" : "text-green-600"}`}>
                 {formatCurrency(Math.abs(total))}
               </span>
             </div>
           </CardHeader>
           <CardContent className="flex-1">
-            <ScrollArea className="h-[400px] pr-4">
-              <div className="space-y-2">
+            <ScrollArea className={isMobile ? "h-[250px]" : "h-[400px]"}>
+              <div className="space-y-2 pr-4">
                 {transactions.map((transaction) => (
                   <Card
                     key={transaction.id}
-                    className="p-3 hover:bg-accent transition-colors"
+                    className="p-2 sm:p-3 hover:bg-accent transition-colors"
                   >
                     <div className="space-y-1">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="font-medium text-sm">
+                        <span className="font-medium text-xs sm:text-sm line-clamp-2">
                           {transaction.description}
                         </span>
                         <Badge
@@ -76,7 +79,7 @@ export function KanbanView({ transactions }: KanbanViewProps) {
                               ? "default"
                               : "secondary"
                           }
-                          className="shrink-0"
+                          className="shrink-0 text-xs"
                         >
                           {transaction.type}
                         </Badge>
@@ -97,7 +100,7 @@ export function KanbanView({ transactions }: KanbanViewProps) {
                         </span>
                       </div>
                       {transaction.comments && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground line-clamp-2">
                           {transaction.comments}
                         </p>
                       )}

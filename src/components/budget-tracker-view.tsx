@@ -12,16 +12,42 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/useMediaQuery";
 
 interface BudgetTrackerViewProps {
   transactions: Transaction[];
   budgetLimits: BudgetLimit[];
 }
 
+function MobileTransactionList({ transactions }: { transactions: Transaction[] }) {
+  return (
+    <div className="space-y-2">
+      {transactions.map((transaction) => (
+        <div
+          key={transaction.id}
+          className="flex items-center justify-between py-2 border-b last:border-0"
+        >
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{transaction.description}</p>
+            <p className="text-xs text-muted-foreground">
+              {new Date(transaction.date).toLocaleDateString()}
+            </p>
+          </div>
+          <span className="text-sm font-mono ml-2">
+            {formatCurrency(transaction.amount)}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function BudgetTrackerView({
   transactions,
   budgetLimits,
 }: BudgetTrackerViewProps) {
+  const isMobile = useIsMobile();
+
   // Group transactions by category
   const groupedData = CATEGORIES.map((category) => {
     const categoryTransactions = transactions.filter(
@@ -59,25 +85,25 @@ export function BudgetTrackerView({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "over":
-        return <Badge variant="destructive">Over Budget</Badge>;
+        return <Badge variant="destructive" className="text-xs">Over Budget</Badge>;
       case "warning":
-        return <Badge className="bg-yellow-500">Near Limit</Badge>;
+        return <Badge className="bg-yellow-500 text-xs">Near Limit</Badge>;
       case "good":
-        return <Badge className="bg-green-500">On Track</Badge>;
+        return <Badge className="bg-green-500 text-xs">On Track</Badge>;
       default:
-        return <Badge variant="outline">No Limit Set</Badge>;
+        return <Badge variant="outline" className="text-xs">No Limit Set</Badge>;
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="grid gap-4 md:grid-cols-2">
       {activeCategories.length === 0 ? (
-        <Card>
+        <Card className="md:col-span-2">
           <CardContent className="flex flex-col items-center justify-center py-10">
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-center">
               No transactions or budget limits set for this month.
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground text-center">
               Add a transaction or set a budget limit to get started.
             </p>
           </CardContent>
@@ -87,23 +113,23 @@ export function BudgetTrackerView({
           const status = getStatus(data.totalSpent, data.budgetLimit);
           return (
             <Card key={data.category}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg">{data.category}</CardTitle>
+              <CardHeader className="pb-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
+                    <CardTitle className="text-base sm:text-lg truncate">{data.category}</CardTitle>
                     {data.comments && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground truncate">
                         {data.comments}
                       </p>
                     )}
                   </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold">
+                  <div className="flex items-center gap-2 sm:text-right">
+                    <div className="flex items-center gap-1">
+                      <span className="text-lg sm:text-2xl font-bold">
                         {formatCurrency(data.totalSpent)}
                       </span>
                       {data.budgetLimit > 0 && (
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           / {formatCurrency(data.budgetLimit)}
                         </span>
                       )}
@@ -113,29 +139,33 @@ export function BudgetTrackerView({
                 </div>
               </CardHeader>
               {data.transactions.length > 0 && (
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {data.transactions.map((transaction) => (
-                        <TableRow key={transaction.id}>
-                          <TableCell>{transaction.description}</TableCell>
-                          <TableCell>
-                            {new Date(transaction.date).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {formatCurrency(transaction.amount)}
-                          </TableCell>
+                <CardContent className="pt-0">
+                  {isMobile ? (
+                    <MobileTransactionList transactions={data.transactions} />
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead className="text-right">Amount</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {data.transactions.map((transaction) => (
+                          <TableRow key={transaction.id}>
+                            <TableCell>{transaction.description}</TableCell>
+                            <TableCell>
+                              {new Date(transaction.date).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {formatCurrency(transaction.amount)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
                 </CardContent>
               )}
             </Card>

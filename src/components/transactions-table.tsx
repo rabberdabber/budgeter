@@ -16,6 +16,8 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/useMediaQuery";
+import { TransactionCardList } from "@/components/transaction-card";
 
 interface TransactionsTableProps {
   transactions: Transaction[];
@@ -24,6 +26,7 @@ interface TransactionsTableProps {
 export function TransactionsTable({ transactions }: TransactionsTableProps) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this transaction?")) {
@@ -60,6 +63,11 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
         </CardContent>
       </Card>
     );
+  }
+
+  // Show card view on mobile
+  if (isMobile) {
+    return <TransactionCardList transactions={transactions} />;
   }
 
   return (

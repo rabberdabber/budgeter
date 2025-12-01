@@ -10,6 +10,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { useIsMobile } from "@/hooks/useMediaQuery";
 
 interface BudgetVsActualChartProps {
   transactions: Transaction[];
@@ -20,6 +21,7 @@ export function BudgetVsActualChart({
   transactions,
   budgetLimits,
 }: BudgetVsActualChartProps) {
+  const isMobile = useIsMobile();
   const expenses = transactions.filter((t) => t.type === "expense");
 
   // Get current month expenses
@@ -37,6 +39,7 @@ export function BudgetVsActualChart({
 
     return {
       category,
+      shortCategory: category.length > 8 ? category.slice(0, 6) + "..." : category,
       actual,
       budget,
     };
@@ -56,28 +59,40 @@ export function BudgetVsActualChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Budget vs Actual Spending</CardTitle>
-        <CardDescription>Compare your spending against budget limits (Current Month)</CardDescription>
+        <CardTitle className="text-base md:text-lg">Budget vs Actual Spending</CardTitle>
+        <CardDescription className="text-xs md:text-sm">Compare your spending against budget limits (Current Month)</CardDescription>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="flex h-[250px] md:h-[300px] items-center justify-center text-muted-foreground">
             No budget data available
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[400px] w-full">
-            <BarChart data={data}>
+          <ChartContainer config={chartConfig} className="h-[300px] md:h-[400px] w-full">
+            <BarChart data={data} margin={{ bottom: isMobile ? 60 : 80 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
-                dataKey="category"
+                dataKey={isMobile ? "shortCategory" : "category"}
                 angle={-45}
                 textAnchor="end"
-                height={100}
-                fontSize={12}
+                height={isMobile ? 80 : 100}
+                fontSize={isMobile ? 10 : 12}
+                interval={0}
               />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <ChartLegend content={<ChartLegendContent />} />
+              <YAxis fontSize={isMobile ? 10 : 12} width={isMobile ? 50 : 60} />
+              <ChartTooltip
+                content={<ChartTooltipContent />}
+                labelFormatter={(label, payload) => {
+                  if (payload && payload[0]) {
+                    return payload[0].payload.category;
+                  }
+                  return label;
+                }}
+              />
+              <ChartLegend
+                content={<ChartLegendContent />}
+                wrapperStyle={isMobile ? { fontSize: '10px' } : {}}
+              />
               <Bar
                 dataKey="budget"
                 fill="var(--color-budget)"

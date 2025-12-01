@@ -2,8 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
 import { getTransactions } from "@/lib/firestore-server";
-import { TransactionsTable } from "@/components/transactions-table";
-import { AddTransactionDialog } from "@/components/add-transaction-dialog";
+import { FilteredTransactionsView } from "@/components/filtered-transactions-view";
 
 export default async function ExpensesPage() {
   const session = await getServerSession(authOptions);
@@ -12,23 +11,14 @@ export default async function ExpensesPage() {
     redirect("/login");
   }
 
-  const allTransactions = await getTransactions();
-  const expenses = allTransactions.filter((t) => t.type === "expense");
-
-  const totalExpenses = expenses.reduce((sum, t) => sum + t.amount, 0);
+  const transactions = await getTransactions();
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
-          <p className="text-muted-foreground">
-            Total: ₩{totalExpenses.toLocaleString("ko-KR")}
-          </p>
-        </div>
-        <AddTransactionDialog />
-      </div>
-      <TransactionsTable transactions={expenses} />
-    </div>
+    <FilteredTransactionsView
+      transactions={transactions}
+      title="Expenses"
+      filterType="expense"
+      showTotal
+    />
   );
 }

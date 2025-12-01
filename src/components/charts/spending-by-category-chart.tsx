@@ -10,6 +10,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { Pie, PieChart, Cell } from "recharts";
+import { useIsMobile } from "@/hooks/useMediaQuery";
 
 interface SpendingByCategoryChartProps {
   transactions: Transaction[];
@@ -31,6 +32,7 @@ const COLORS = [
 ];
 
 export function SpendingByCategoryChart({ transactions }: SpendingByCategoryChartProps) {
+  const isMobile = useIsMobile();
   const expenses = transactions.filter((t) => t.type === "expense");
 
   const data = CATEGORIES.map((category, index) => {
@@ -60,28 +62,46 @@ export function SpendingByCategoryChart({ transactions }: SpendingByCategoryChar
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="flex h-[250px] md:h-[300px] items-center justify-center text-muted-foreground">
             No expense data available
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[400px]">
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto h-[300px] md:h-[400px] w-full"
+          >
             <PieChart>
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name) => (
+                      <span>
+                        {name}: ₩{Number(value).toLocaleString()}
+                      </span>
+                    )}
+                  />
+                }
+              />
               <Pie
                 data={data}
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
-                cy="50%"
-                outerRadius={120}
-                label={(entry) => `${entry.name}: ₩${entry.value.toLocaleString()}`}
-                labelLine
+                cy={isMobile ? "45%" : "50%"}
+                outerRadius={isMobile ? 80 : 120}
+                label={isMobile ? false : (entry) => `₩${entry.value.toLocaleString()}`}
+                labelLine={!isMobile}
               >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.fill} />
                 ))}
               </Pie>
-              <ChartLegend content={<ChartLegendContent />} />
+              <ChartLegend
+                content={<ChartLegendContent />}
+                layout="horizontal"
+                verticalAlign="bottom"
+                wrapperStyle={isMobile ? { fontSize: '10px', paddingTop: '10px' } : {}}
+              />
             </PieChart>
           </ChartContainer>
         )}
